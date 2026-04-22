@@ -235,9 +235,9 @@ addRow(i, "TRUE", outputs.join(", "));
 step = 4;
 break;
 
-/* INCREMENT (updated i shown) */
+/* INCREMENT */
 case 4:
-highlight(1,4);
+highlight(3,4);  // corrected: now highlights NEXT i
 i++;
 addRow(i, "-", outputs.join(", "));
 step = 2;
