@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Loop Tracer</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #4CAF50;
+    --accent: #FFD54F;
+    --bg-light: #232323;
+    --bg-canvas: #2E2E2E;
+    --text-dark: #FFFFFF;
+    --border: #444444;
+}
+
+body {
+    margin: 0;
+    background: var(--bg-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Outfit', sans-serif;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    max-width: 1600px;
+    max-height: 900px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    box-sizing: border-box;
+    color: var(--text-dark);
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary);
+    margin: 5px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    gap: 15px;
+    flex: 1;
+}
+
+.card {
+    background: var(--bg-canvas);
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+h3 {
+    border-bottom: 2px solid var(--primary);
+    margin-bottom: 8px;
+}
+
+/* pseudocode */
+.line { font-family: monospace; padding: 4px; }
+.active-line { background: var(--accent); color: black; }
+
+/* flowchart */
+.flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.node {
+    width: 110px;
+    padding: 8px;
+    border: 2px solid var(--border);
+    text-align: center;
+    background: var(--bg-light);
+}
+
+.oval { border-radius: 20px; }
+
+.diamond {
+    width: 75px;
+    height: 75px;
+    transform: rotate(45deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.diamond span { transform: rotate(-45deg); }
+
+.active-node { background: var(--primary); }
+
+/* table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.85rem;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: center;
+    color: black;
+}
+
+th {
+    background: var(--primary);
+    color: white;
+}
+
+.new-entry {
+    background-color: #fff8c4;
+}
+
+/* buttons */
+.controls {
+    text-align: center;
+    margin-top: 8px;
+}
+
+button {
+    padding: 6px 18px;
+    margin: 3px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-next { background: var(--primary); color: white; }
+.btn-reset { background: #444; color: white; }
+
+</style>
+</head>
+
+<body>
+
+<div class="slide">
+
+<h1>loop tracer: numbers 1 to 5</h1>
+
+<div class="layout">
+
+<div class="card">
+<h3>pseudocode</h3>
+<div id="p0" class="line">START</div>
+<div id="p1" class="line">FOR i = 1 TO 5 DO</div>
+<div id="p2" class="line">PRINT i</div>
+<div id="p3" class="line">END FOR</div>
+<div id="p4" class="line">STOP</div>
+</div>
+
+<div class="card">
+<h3>flowchart</h3>
+<div class="flowchart">
+<div class="node oval" id="f0">START</div>
+<div class="node" id="f1">SET i = 1</div>
+<div class="node diamond" id="f2"><span>i ≤ 5?</span></div>
+<div class="node" id="f3">PRINT i</div>
+<div class="node" id="f4">i = i + 1</div>
+<div class="node oval" id="f5">STOP</div>
+</div>
+</div>
+
+<div class="card">
+<h3>trace table</h3>
+<table>
+<thead>
+<tr>
+<th>i</th>
+<th>condition</th>
+<th>output</th>
+</tr>
+</thead>
+<tbody id="table-body"></tbody>
+</table>
+</div>
+
+</div>
+
+<div class="controls">
+<button class="btn-next" onclick="nextStep()">next</button>
+<button class="btn-reset" onclick="resetTracer()">reset</button>
+</div>
+
+</div>
+
+<script>
+
+let step = 0;
+let i = 1;
+let outputs = [];
+
+function nextStep() {
+clearStyles();
+
+switch(step) {
+
+/* START */
+case 0:
+highlight(0,0);
+step = 1;
+break;
+
+/* SET i = 1 (trace added) */
+case 1:
+highlight(1,1);
+addRow(i, "-", "-");
+step = 2;
+break;
+
+/* DECISION */
+case 2:
+highlight(1,2);
+let cond = i <= 5;
+addRow(i, cond ? "TRUE" : "FALSE", outputs.join(", ") || "-");
+if(cond) step = 3;
+else step = 6;
+break;
+
+/* PRINT */
+case 3:
+highlight(2,3);
+outputs.push(i);
+addRow(i, "TRUE", outputs.join(", "));
+step = 4;
+break;
+
+/* INCREMENT (updated i shown) */
+case 4:
+highlight(1,4);
+i++;
+addRow(i, "-", outputs.join(", "));
+step = 2;
+break;
+
+/* STOP */
+case 6:
+highlight(4,5);
+step = 7;
+break;
+
+}
+}
+
+function highlight(p,f) {
+document.getElementById("p"+p).classList.add("active-line");
+document.getElementById("f"+f).classList.add("active-node");
+}
+
+function addRow(iVal, cond, out) {
+let row = document.getElementById("table-body").insertRow();
+row.className = "new-entry";
+row.innerHTML = `<td>${iVal}</td><td>${cond}</td><td>${out}</td>`;
+}
+
+function clearStyles() {
+document.querySelectorAll(".line").forEach(e=>e.classList.remove("active-line"));
+document.querySelectorAll(".node").forEach(e=>e.classList.remove("active-node"));
+}
+
+function resetTracer() {
+step = 0;
+i = 1;
+outputs = [];
+document.getElementById("table-body").innerHTML = "";
+clearStyles();
+}
+
+</script>
+
+</body>
+</html>
