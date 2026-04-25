@@ -146,7 +146,7 @@ button {
 
 <div class="slide">
 
-<h1>loop tracer: numbers 1 to 5</h1>
+<h1>Loop tracer: numbers 1 to 5</h1>
 
 <div class="layout">
 
@@ -160,7 +160,7 @@ button {
 </div>
 
 <div class="card">
-<h3>flowchart</h3>
+<h3>Flowchart</h3>
 <div class="flowchart">
 <div class="node oval" id="f0">START</div>
 <div class="node" id="f1">SET i = 1</div>
@@ -172,7 +172,7 @@ button {
 </div>
 
 <div class="card">
-<h3>trace table</h3>
+<h3>Trace table</h3>
 <table>
 <thead>
 <tr>
@@ -230,8 +230,8 @@ break;
 /* PRINT */
 case 3:
 highlight(2,3);
-outputs.push(i);
-addRow(i, "TRUE", outputs.join(", "));
+outputs.push(i); // keep if you want final output later
+addRow(i, "TRUE", i);
 step = 4;
 break;
 
