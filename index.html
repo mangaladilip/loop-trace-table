@@ -64,11 +64,9 @@ h3 {
     margin-bottom: 8px;
 }
 
-/* pseudocode */
 .line { font-family: monospace; padding: 4px; }
 .active-line { background: var(--accent); color: black; }
 
-/* flowchart */
 .flowchart {
     display: flex;
     flex-direction: column;
@@ -99,7 +97,6 @@ h3 {
 
 .active-node { background: var(--primary); }
 
-/* table */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -123,7 +120,6 @@ th {
     background-color: #fff8c4;
 }
 
-/* buttons */
 .controls {
     text-align: center;
     margin-top: 8px;
@@ -153,7 +149,7 @@ button {
 <div class="card">
 <h3>pseudocode</h3>
 <div id="p0" class="line">START</div>
-<div id="p1" class="line">FOR i = 1 TO 5 </div>
+<div id="p1" class="line">FOR i = 1 TO 5</div>
 <div id="p2" class="line">PRINT i</div>
 <div id="p3" class="line">NEXT i</div>
 <div id="p4" class="line">STOP</div>
@@ -164,7 +160,7 @@ button {
 <div class="flowchart">
 <div class="node oval" id="f0">START</div>
 <div class="node" id="f1">SET i = 1</div>
-<div class="node diamond" id="f2"><span>i <= 5?</span></div>
+<div class="node diamond" id="f2"><span>i ≤ 5?</span></div>
 <div class="node" id="f3">PRINT i</div>
 <div class="node" id="f4">i = i + 1</div>
 <div class="node oval" id="f5">STOP</div>
@@ -211,10 +207,10 @@ highlight(0,0);
 step = 1;
 break;
 
-/* SET i = 1 (trace added) */
+/* SET i = 1 */
 case 1:
 highlight(1,1);
-addRow(i, "-", "-");
+addRow(i, " ", " ");   // first entry
 step = 2;
 break;
 
@@ -222,7 +218,13 @@ break;
 case 2:
 highlight(1,2);
 let cond = i <= 5;
-addRow(i, cond ? "TRUE" : "FALSE", outputs.join(", ") || "-");
+
+let lastRow = document.getElementById("table-body").rows[
+    document.getElementById("table-body").rows.length - 1
+];
+
+lastRow.cells[1].innerText = cond ? "TRUE" : "FALSE";
+
 if(cond) step = 3;
 else step = 6;
 break;
@@ -230,16 +232,24 @@ break;
 /* PRINT */
 case 3:
 highlight(2,3);
-outputs.push(i); // keep if you want final output later
-addRow(i, "TRUE", i);
+outputs.push(i);
+
+let lastRowPrint = document.getElementById("table-body").rows[
+    document.getElementById("table-body").rows.length - 1
+];
+
+lastRowPrint.cells[2].innerText = i;
+
 step = 4;
 break;
 
 /* INCREMENT */
 case 4:
-highlight(3,4);  // corrected: now highlights NEXT i
+highlight(3,4);
 i++;
-addRow(i, "-", outputs.join(", "));
+
+addRow(i, " ", " ");  // new row for next iteration
+
 step = 2;
 break;
 
